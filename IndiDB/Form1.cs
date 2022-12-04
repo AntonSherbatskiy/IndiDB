@@ -156,6 +156,18 @@ namespace IndiDB
             }
         }
 
-        
+        private void button1_Click_2(object sender, EventArgs e)
+        {
+            MainTable.Clear();
+
+            var data = Component.GetAllIndexData();
+
+            foreach (var item in data)
+            {
+                MainTable.Rows.Add(item.Id, item.Value);
+            }
+
+            databaseGrid.DataSource = MainTable;
+        }
     }
 }

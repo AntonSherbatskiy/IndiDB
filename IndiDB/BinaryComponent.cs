@@ -31,6 +31,13 @@ namespace IndiDB
                 return false;
             }
 
+            if (true)
+            {
+                FileStream stream = new FileStream(IndexFileName, FileMode.Truncate);
+                stream.SetLength(BlockSizeInBytes * 100);
+                stream.Close();
+            }
+
             using (var dataWriter = new BinaryWriter(File.Open(DataFileName, FileMode.Open)))
             {
                 dataWriter.BaseStream.Position = dataWriter.BaseStream.Length;
@@ -41,7 +48,7 @@ namespace IndiDB
 
             int blockId = (int)Math.Floor((double)record.Id / 100);
             int startBytePosition = blockId * BlockSizeInBytes;
-            var IndexBlock = GetBlockByBlockId(blockId);
+            var IndexBlock = GetIndexBlockByBlockId(blockId);
 
             IndexBlock.Add(new Record(record.Id, RecordsQuantity));
             IndexBlock = IndexBlock
@@ -157,9 +164,25 @@ namespace IndiDB
         {
             List<Record> data = new List<Record>();
 
-            using (var binaryReader = new BinaryReader(File.Open(IndexFileName, FileMode.Open)))
+            using (var binaryReader = new BinaryReader(File.Open(DataFileName, FileMode.Open)))
             {
                 while (binaryReader.BaseStream.Position 
+                    != binaryReader.BaseStream.Length)
+                {
+                    data.Add(new Record(binaryReader.ReadInt32(), binaryReader.ReadInt32()));
+                }
+            }
+
+            return data;
+        }
+
+        public List<Record> GetAllIndexData()
+        {
+            List<Record> data = new List<Record>();
+
+            using (var binaryReader = new BinaryReader(File.Open(IndexFileName, FileMode.Open)))
+            {
+                while (binaryReader.BaseStream.Position
                     != binaryReader.BaseStream.Length)
                 {
                     data.Add(new Record(binaryReader.ReadInt32(), binaryReader.ReadInt32()));
@@ -201,6 +224,26 @@ namespace IndiDB
                         recordList.Add(new Record(binaryReader.ReadInt32(), binaryReader.ReadInt32()));
                     }
                 }
+            }
+
+            return recordList;
+        }
+
+        public List<Record> GetIndexBlockByBlockId(int blockId)
+        {
+            List<Record> recordList = new List<Record>();
+
+            using (var binaryReader = new BinaryReader(File.Open(IndexFileName, FileMode.Open)))
+            {
+                
+                
+                binaryReader.BaseStream.Position = blockId * BlockSizeInBytes;
+
+                for (int i = 0; i < 100; i++)
+                {
+                    recordList.Add(new Record(binaryReader.ReadInt32(), binaryReader.ReadInt32()));
+                }
+                
             }
 
             return recordList;
