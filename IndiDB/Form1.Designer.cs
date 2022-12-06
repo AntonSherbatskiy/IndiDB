@@ -38,6 +38,7 @@
             this.clearAllDataButton = new System.Windows.Forms.Button();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
+            this.button1 = new System.Windows.Forms.Button();
             this.recordByIdNumericUpDown = new System.Windows.Forms.NumericUpDown();
             this.getRecordByIdButton = new System.Windows.Forms.Button();
             this.blockIdNumericUpDown = new System.Windows.Forms.NumericUpDown();
@@ -45,7 +46,6 @@
             this.groupBox4 = new System.Windows.Forms.GroupBox();
             this.button4 = new System.Windows.Forms.Button();
             this.button5 = new System.Windows.Forms.Button();
-            this.button1 = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.databaseGrid)).BeginInit();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.databaseEditorGrid)).BeginInit();
@@ -90,7 +90,7 @@
             this.groupBox1.Controls.Add(this.clearAllDataButton);
             this.groupBox1.Location = new System.Drawing.Point(12, 505);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(703, 193);
+            this.groupBox1.Size = new System.Drawing.Size(703, 237);
             this.groupBox1.TabIndex = 3;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Database editor";
@@ -105,6 +105,7 @@
             this.deleteButton.TabIndex = 3;
             this.deleteButton.Text = "Delete";
             this.deleteButton.UseVisualStyleBackColor = false;
+            this.deleteButton.Click += new System.EventHandler(this.deleteButton_Click);
             // 
             // editButton
             // 
@@ -126,7 +127,7 @@
             this.databaseEditorGrid.Name = "databaseEditorGrid";
             this.databaseEditorGrid.RowHeadersWidth = 51;
             this.databaseEditorGrid.RowTemplate.Height = 29;
-            this.databaseEditorGrid.Size = new System.Drawing.Size(691, 110);
+            this.databaseEditorGrid.Size = new System.Drawing.Size(691, 154);
             this.databaseEditorGrid.TabIndex = 1;
             // 
             // addButton
@@ -176,12 +177,23 @@
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Database queries";
             // 
+            // button1
+            // 
+            this.button1.BackColor = System.Drawing.Color.PaleGreen;
+            this.button1.Location = new System.Drawing.Point(6, 83);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(430, 51);
+            this.button1.TabIndex = 7;
+            this.button1.Text = "Get all index records";
+            this.button1.UseVisualStyleBackColor = false;
+            this.button1.Click += new System.EventHandler(this.button1_Click_2);
+            // 
             // recordByIdNumericUpDown
             // 
             this.recordByIdNumericUpDown.Font = new System.Drawing.Font("Segoe UI", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.recordByIdNumericUpDown.Location = new System.Drawing.Point(322, 280);
             this.recordByIdNumericUpDown.Maximum = new decimal(new int[] {
-            10000,
+            9999,
             0,
             0,
             0});
@@ -204,6 +216,11 @@
             // 
             this.blockIdNumericUpDown.Font = new System.Drawing.Font("Segoe UI", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.blockIdNumericUpDown.Location = new System.Drawing.Point(322, 225);
+            this.blockIdNumericUpDown.Maximum = new decimal(new int[] {
+            99,
+            0,
+            0,
+            0});
             this.blockIdNumericUpDown.Name = "blockIdNumericUpDown";
             this.blockIdNumericUpDown.Size = new System.Drawing.Size(114, 47);
             this.blockIdNumericUpDown.TabIndex = 4;
@@ -252,23 +269,12 @@
             this.button5.UseVisualStyleBackColor = false;
             this.button5.Click += new System.EventHandler(this.button5_Click);
             // 
-            // button1
-            // 
-            this.button1.BackColor = System.Drawing.Color.PaleGreen;
-            this.button1.Location = new System.Drawing.Point(6, 83);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(430, 51);
-            this.button1.TabIndex = 7;
-            this.button1.Text = "Get all index records";
-            this.button1.UseVisualStyleBackColor = false;
-            this.button1.Click += new System.EventHandler(this.button1_Click_2);
-            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.Control;
-            this.ClientSize = new System.Drawing.Size(1169, 706);
+            this.ClientSize = new System.Drawing.Size(1169, 754);
             this.Controls.Add(this.groupBox4);
             this.Controls.Add(this.groupBox3);
             this.Controls.Add(this.groupBox2);

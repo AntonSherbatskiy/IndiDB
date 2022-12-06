@@ -1,4 +1,5 @@
 using System.Data;
+using System.Diagnostics.CodeAnalysis;
 using System.Windows.Forms;
 
 namespace IndiDB
@@ -48,7 +49,7 @@ namespace IndiDB
                 {
                     if (row[0].ToString() != string.Empty && row[1].ToString() != string.Empty)
                     {
-                        Record record = new Record(Convert.ToInt32(row[0]), Convert.ToInt32(row[1]));
+                        var record = new DataRecord(Convert.ToInt32(row[0]), Convert.ToInt32(row[1]));
 
                         if (Component.RecordContains(record))
                         {
@@ -66,7 +67,7 @@ namespace IndiDB
         {
             MainTable.Clear();
 
-            var data = Component.GetAllData();
+            var data = BinaryQuery.GetAllData("main.data").Cast<DataRecord>();
 
             foreach (var item in data)
             {
@@ -82,7 +83,10 @@ namespace IndiDB
         {
             foreach (DataRow row in EditorTable.Rows)
             {
-                Component.EditRecord(new Record(Convert.ToInt32(row[0]), Convert.ToInt32(row[1])));
+                if (row[0] is not DBNull && row[1] is not DBNull)
+                {
+                    Component.EditRecord(new DataRecord(Convert.ToInt32(row[0]), Convert.ToInt32(row[1])));
+                }
             }
         }
 
@@ -118,7 +122,7 @@ namespace IndiDB
         {
             try
             {
-                var block = Component.GetBlockByBlockId((int)blockIdNumericUpDown.Value);
+                var block = BinaryQuery.GeDataBlockByBlockId("main.data", (int)blockIdNumericUpDown.Value);
 
                 if (block.Count == 0)
                 {
@@ -141,26 +145,30 @@ namespace IndiDB
 
         private void getRecordByIdButton_Click(object sender, EventArgs e)
         {
-            Record? record = Component.GetRecordById((int)recordByIdNumericUpDown.Value);
-
-            if (record != null)
+            if (BinaryComponent.RecordsQuantity == 0)
             {
-                MainTable.Clear();
+                MessageBox.Show($"Empty file.", "main.data", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
 
-                MainTable.Rows.Add(record.Id, record.Value);
-                databaseGrid.Refresh();
-            }
-            else
+            DataRecord? record = BinaryQuery.GetRecordById("main.data", "index.data", (int)recordByIdNumericUpDown.Value);
+
+            if (record == null)
             {
-                MessageBox.Show("This record does not exists.", "Empty record", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show($"Record with index {recordByIdNumericUpDown.Value} does not esists!", "main.data", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
             }
+            MainTable.Clear();
+
+            MainTable.Rows.Add(record.Id, record.Value);
+            databaseGrid.Refresh();
         }
 
         private void button1_Click_2(object sender, EventArgs e)
         {
             MainTable.Clear();
 
-            var data = Component.GetAllIndexData();
+            var data = BinaryQuery.GetAllData("index.data").Cast<IndexRecord>();
 
             foreach (var item in data)
             {
@@ -168,6 +176,17 @@ namespace IndiDB
             }
 
             databaseGrid.DataSource = MainTable;
+        }
+
+        private void deleteButton_Click(object sender, EventArgs e)
+        {
+            foreach (DataRow row in EditorTable.Rows)
+            {
+                if (row[0] is not DBNull)
+                {
+                    Component.RemoveRecord(new DataRecord(Convert.ToInt32(row[0]), Convert.ToInt32(row[1])));
+                }
+            }
         }
     }
 }
