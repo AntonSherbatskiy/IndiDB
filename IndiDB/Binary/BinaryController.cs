@@ -4,12 +4,13 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
+using IndiDB.FileRecord;
 
-namespace IndiDB
+namespace IndiDB.Binary
 {
-    public class BinaryComponent
+    public class BinaryController
     {
-        public BinaryComponent(string fileName, string indexFileName)
+        public BinaryController(string fileName, string indexFileName)
         {
             DataFileName = fileName;
             IndexFileName = indexFileName;
@@ -19,7 +20,6 @@ namespace IndiDB
         public string IndexFileName { get; private set; }
 
         public static int RecordsQuantity => BinaryQuery.RecordsQuantity;
-        public int BlocksQuantity => (RecordsQuantity / RecordsInBlockQuantity);
 
         public const int BlockSizeInBytes = 800;
         public const int RecordsInBlockQuantity = 100;
@@ -28,14 +28,14 @@ namespace IndiDB
 
         public bool AddRecord(DataRecord record)
         {
-            if (RecordContains(record))
+            if (RecordContains(record.Id))
             {
                 return false;
             }
 
             if (RecordsQuantity == 0)
             {
-                GenerateIndexFileLayout("index.data");
+                GenerateIndexFileLayout(IndexFileName);
             }
 
             using (var dataWriter = new BinaryWriter(File.Open(DataFileName, FileMode.Append)))
@@ -48,32 +48,33 @@ namespace IndiDB
             int startBytePosition = blockId * BlockSizeInBytes;
 
             InsertIndex(IndexFileName, record.Id, startBytePosition, blockId);
-            
+
             return true;
         }
 
-        public bool RemoveRecord(DataRecord record)
+        public bool RemoveRecord(int id)
         {
-            if (!RecordContains(record))
+            if (!RecordContains(id))
             {
                 return false;
             }
 
             List<DataRecord> records = new List<DataRecord>();
-            
-            using (var dataWriter = new BinaryReader(File.Open(DataFileName, FileMode.Open)))
-            {
-                dataWriter.BaseStream.Position = BinaryQuery.GetRecordPosition(IndexFileName, record) * Record.ByteSize + Record.ByteSize;
+            long position = BinaryQuery.GetRecordPosition(IndexFileName, id) * Record.ByteSize + Record.ByteSize;
 
-                while (dataWriter.BaseStream.Position != dataWriter.BaseStream.Length)
+            using (var dataReader = new BinaryReader(File.Open(DataFileName, FileMode.Open)))
+            {
+                dataReader.BaseStream.Position = BinaryQuery.GetRecordPosition(IndexFileName, id) * Record.ByteSize + Record.ByteSize;
+
+                while (dataReader.BaseStream.Position != dataReader.BaseStream.Length)
                 {
-                    records.Add(new DataRecord(dataWriter.ReadInt32(), dataWriter.ReadInt32()));
+                    records.Add(new DataRecord(dataReader.ReadInt32(), dataReader.ReadInt32()));
                 }
             }
 
             using (var stream = File.Open(DataFileName, FileMode.Open))
             {
-                stream.Position = BinaryQuery.GetRecordPosition(IndexFileName, record) * Record.ByteSize;
+                stream.Position = BinaryQuery.GetRecordPosition(IndexFileName, id) * Record.ByteSize;
 
                 foreach (var item in records)
                 {
@@ -84,10 +85,9 @@ namespace IndiDB
                 stream.SetLength(stream.Length - Record.ByteSize);
             }
 
-            RemoveIndex("index.data", record.Id);
+            RemoveIndex("index.data", id);
 
             return true;
-
         }
 
         private void RemoveIndex(string fileName, int index)
@@ -95,7 +95,7 @@ namespace IndiDB
             int blockId = (int)Math.Floor((double)index / 100);
             int startBytePosition = blockId * BlockSizeInBytes;
             int position = -1;
-            var indexBlock = BinaryQuery.GetIndexBlockByBlockId("index.data", blockId);
+            var indexBlock = BinaryQuery.GetIndexBlock(fileName, blockId);
 
             foreach (var item in indexBlock.Where(item => item.Id == index))
             {
@@ -117,7 +117,7 @@ namespace IndiDB
         {
             using (var stream = File.Open(indexFileName, FileMode.Open))
             {
-                
+
                 while (stream.Position != stream.Length)
                 {
                     byte[] intBuffer = new byte[sizeof(int)];
@@ -142,7 +142,7 @@ namespace IndiDB
 
         public void InsertIndex(string fileName, int index, long startBytePosition, int blockId)
         {
-            var IndexBlock = BinaryQuery.GetIndexBlockByBlockId(fileName, blockId);
+            var IndexBlock = BinaryQuery.GetIndexBlock(fileName, blockId);
 
             for (int i = 0; i < IndexBlock.Count; i++)
             {
@@ -157,8 +157,6 @@ namespace IndiDB
             IndexBlock = IndexBlock
                 .OrderBy(item => item.Id)
                 .ToList();
-
-            
 
             SetBlock(IndexBlock, startBytePosition);
         }
@@ -179,12 +177,12 @@ namespace IndiDB
 
         public bool EditRecord(DataRecord record)
         {
-            if (RecordContains(record))
+            if (RecordContains(record.Id))
             {
-                long bytePosition = BinaryQuery.GetRecordPosition(IndexFileName, record);
+                long bytePosition = BinaryQuery.GetRecordPosition(IndexFileName, record.Id);
                 using (var dataStream = File.Open(DataFileName, FileMode.Open))
                 {
-                    dataStream.Position = (Record.ByteSize * bytePosition) + sizeof(int);
+                    dataStream.Position = Record.ByteSize * bytePosition + sizeof(int);
                     dataStream.Write(BitConverter.GetBytes(record.Value), 0, sizeof(int));
                 }
 
@@ -194,7 +192,7 @@ namespace IndiDB
             return false;
         }
 
-        public bool RecordContains(DataRecord record)
+        public bool RecordContains(int id)
         {
             using (var indexReader = new BinaryReader(File.Open(IndexFileName, FileMode.Open)))
             {
@@ -202,7 +200,7 @@ namespace IndiDB
                 {
                     int index = indexReader.ReadInt32();
 
-                    if (index == record.Id)
+                    if (index == id)
                     {
                         return true;
                     }
@@ -213,7 +211,7 @@ namespace IndiDB
 
             return false;
         }
-        
+
         public void ClearAllData()
         {
             using (var dataStream = File.Open(DataFileName, FileMode.Open))

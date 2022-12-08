@@ -38,21 +38,17 @@
             this.clearAllDataButton = new System.Windows.Forms.Button();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
-            this.button1 = new System.Windows.Forms.Button();
             this.recordByIdNumericUpDown = new System.Windows.Forms.NumericUpDown();
             this.getRecordByIdButton = new System.Windows.Forms.Button();
-            this.blockIdNumericUpDown = new System.Windows.Forms.NumericUpDown();
-            this.getBlockByIdButton = new System.Windows.Forms.Button();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
-            this.button4 = new System.Windows.Forms.Button();
-            this.button5 = new System.Windows.Forms.Button();
+            this.generateRandomDataButton = new System.Windows.Forms.Button();
+            this.clearFileButton = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.databaseGrid)).BeginInit();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.databaseEditorGrid)).BeginInit();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.recordByIdNumericUpDown)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.blockIdNumericUpDown)).BeginInit();
             this.groupBox4.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -67,7 +63,7 @@
             this.databaseGrid.ReadOnly = true;
             this.databaseGrid.RowHeadersWidth = 50;
             this.databaseGrid.RowTemplate.Height = 29;
-            this.databaseGrid.Size = new System.Drawing.Size(691, 455);
+            this.databaseGrid.Size = new System.Drawing.Size(1199, 444);
             this.databaseGrid.TabIndex = 0;
             // 
             // getAllRecordsButton
@@ -75,11 +71,11 @@
             this.getAllRecordsButton.BackColor = System.Drawing.Color.PaleGreen;
             this.getAllRecordsButton.Location = new System.Drawing.Point(6, 26);
             this.getAllRecordsButton.Name = "getAllRecordsButton";
-            this.getAllRecordsButton.Size = new System.Drawing.Size(430, 51);
+            this.getAllRecordsButton.Size = new System.Drawing.Size(478, 45);
             this.getAllRecordsButton.TabIndex = 1;
             this.getAllRecordsButton.Text = "Get all database records";
             this.getAllRecordsButton.UseVisualStyleBackColor = false;
-            this.getAllRecordsButton.Click += new System.EventHandler(this.button1_Click);
+            this.getAllRecordsButton.Click += new System.EventHandler(this.getAllRecordsButton_Click);
             // 
             // groupBox1
             // 
@@ -88,13 +84,12 @@
             this.groupBox1.Controls.Add(this.databaseEditorGrid);
             this.groupBox1.Controls.Add(this.addButton);
             this.groupBox1.Controls.Add(this.clearAllDataButton);
-            this.groupBox1.Location = new System.Drawing.Point(12, 505);
+            this.groupBox1.Location = new System.Drawing.Point(12, 494);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(703, 237);
+            this.groupBox1.Size = new System.Drawing.Size(703, 251);
             this.groupBox1.TabIndex = 3;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Database editor";
-            this.groupBox1.Enter += new System.EventHandler(this.groupBox1_Enter);
             // 
             // deleteButton
             // 
@@ -116,7 +111,7 @@
             this.editButton.TabIndex = 2;
             this.editButton.Text = "Edit";
             this.editButton.UseVisualStyleBackColor = false;
-            this.editButton.Click += new System.EventHandler(this.button1_Click_1);
+            this.editButton.Click += new System.EventHandler(this.editButton_Click);
             // 
             // databaseEditorGrid
             // 
@@ -127,7 +122,7 @@
             this.databaseEditorGrid.Name = "databaseEditorGrid";
             this.databaseEditorGrid.RowHeadersWidth = 51;
             this.databaseEditorGrid.RowTemplate.Height = 29;
-            this.databaseEditorGrid.Size = new System.Drawing.Size(691, 154);
+            this.databaseEditorGrid.Size = new System.Drawing.Size(691, 168);
             this.databaseEditorGrid.TabIndex = 1;
             // 
             // addButton
@@ -139,7 +134,7 @@
             this.addButton.TabIndex = 0;
             this.addButton.Text = "Add";
             this.addButton.UseVisualStyleBackColor = false;
-            this.addButton.Click += new System.EventHandler(this.button2_Click);
+            this.addButton.Click += new System.EventHandler(this.addButton_Click);
             // 
             // clearAllDataButton
             // 
@@ -157,124 +152,86 @@
             this.groupBox2.Controls.Add(this.databaseGrid);
             this.groupBox2.Location = new System.Drawing.Point(12, 12);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(703, 487);
+            this.groupBox2.Size = new System.Drawing.Size(1205, 476);
             this.groupBox2.TabIndex = 4;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Main table";
             // 
             // groupBox3
             // 
-            this.groupBox3.Controls.Add(this.button1);
             this.groupBox3.Controls.Add(this.recordByIdNumericUpDown);
             this.groupBox3.Controls.Add(this.getRecordByIdButton);
-            this.groupBox3.Controls.Add(this.blockIdNumericUpDown);
-            this.groupBox3.Controls.Add(this.getBlockByIdButton);
             this.groupBox3.Controls.Add(this.getAllRecordsButton);
-            this.groupBox3.Location = new System.Drawing.Point(721, 161);
+            this.groupBox3.Location = new System.Drawing.Point(727, 494);
             this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(442, 338);
+            this.groupBox3.Size = new System.Drawing.Size(490, 128);
             this.groupBox3.TabIndex = 5;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Database queries";
             // 
-            // button1
-            // 
-            this.button1.BackColor = System.Drawing.Color.PaleGreen;
-            this.button1.Location = new System.Drawing.Point(6, 83);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(430, 51);
-            this.button1.TabIndex = 7;
-            this.button1.Text = "Get all index records";
-            this.button1.UseVisualStyleBackColor = false;
-            this.button1.Click += new System.EventHandler(this.button1_Click_2);
-            // 
             // recordByIdNumericUpDown
             // 
-            this.recordByIdNumericUpDown.Font = new System.Drawing.Font("Segoe UI", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.recordByIdNumericUpDown.Location = new System.Drawing.Point(322, 280);
+            this.recordByIdNumericUpDown.Font = new System.Drawing.Font("Segoe UI", 13.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.recordByIdNumericUpDown.Location = new System.Drawing.Point(370, 77);
             this.recordByIdNumericUpDown.Maximum = new decimal(new int[] {
             9999,
             0,
             0,
             0});
             this.recordByIdNumericUpDown.Name = "recordByIdNumericUpDown";
-            this.recordByIdNumericUpDown.Size = new System.Drawing.Size(114, 47);
+            this.recordByIdNumericUpDown.Size = new System.Drawing.Size(114, 38);
             this.recordByIdNumericUpDown.TabIndex = 6;
             // 
             // getRecordByIdButton
             // 
             this.getRecordByIdButton.BackColor = System.Drawing.Color.Moccasin;
-            this.getRecordByIdButton.Location = new System.Drawing.Point(6, 280);
+            this.getRecordByIdButton.Location = new System.Drawing.Point(6, 76);
             this.getRecordByIdButton.Name = "getRecordByIdButton";
-            this.getRecordByIdButton.Size = new System.Drawing.Size(310, 51);
+            this.getRecordByIdButton.Size = new System.Drawing.Size(358, 45);
             this.getRecordByIdButton.TabIndex = 5;
             this.getRecordByIdButton.Text = "Get record by id:";
             this.getRecordByIdButton.UseVisualStyleBackColor = false;
             this.getRecordByIdButton.Click += new System.EventHandler(this.getRecordByIdButton_Click);
             // 
-            // blockIdNumericUpDown
-            // 
-            this.blockIdNumericUpDown.Font = new System.Drawing.Font("Segoe UI", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.blockIdNumericUpDown.Location = new System.Drawing.Point(322, 225);
-            this.blockIdNumericUpDown.Maximum = new decimal(new int[] {
-            99,
-            0,
-            0,
-            0});
-            this.blockIdNumericUpDown.Name = "blockIdNumericUpDown";
-            this.blockIdNumericUpDown.Size = new System.Drawing.Size(114, 47);
-            this.blockIdNumericUpDown.TabIndex = 4;
-            // 
-            // getBlockByIdButton
-            // 
-            this.getBlockByIdButton.BackColor = System.Drawing.Color.Moccasin;
-            this.getBlockByIdButton.Location = new System.Drawing.Point(6, 223);
-            this.getBlockByIdButton.Name = "getBlockByIdButton";
-            this.getBlockByIdButton.Size = new System.Drawing.Size(310, 51);
-            this.getBlockByIdButton.TabIndex = 3;
-            this.getBlockByIdButton.Text = "Get block by block id:";
-            this.getBlockByIdButton.UseVisualStyleBackColor = false;
-            this.getBlockByIdButton.Click += new System.EventHandler(this.getBlockByIdButton_Click);
-            // 
             // groupBox4
             // 
-            this.groupBox4.Controls.Add(this.button4);
-            this.groupBox4.Controls.Add(this.button5);
-            this.groupBox4.Location = new System.Drawing.Point(721, 12);
+            this.groupBox4.Controls.Add(this.generateRandomDataButton);
+            this.groupBox4.Controls.Add(this.clearFileButton);
+            this.groupBox4.Location = new System.Drawing.Point(727, 621);
             this.groupBox4.Name = "groupBox4";
-            this.groupBox4.Size = new System.Drawing.Size(442, 143);
+            this.groupBox4.Size = new System.Drawing.Size(490, 124);
             this.groupBox4.TabIndex = 6;
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "File control";
             // 
-            // button4
+            // generateRandomDataButton
             // 
-            this.button4.BackColor = System.Drawing.Color.PaleGreen;
-            this.button4.Location = new System.Drawing.Point(6, 26);
-            this.button4.Name = "button4";
-            this.button4.Size = new System.Drawing.Size(430, 51);
-            this.button4.TabIndex = 3;
-            this.button4.Text = "Generate random data";
-            this.button4.UseVisualStyleBackColor = false;
-            this.button4.Click += new System.EventHandler(this.button4_Click);
+            this.generateRandomDataButton.BackColor = System.Drawing.Color.PaleGreen;
+            this.generateRandomDataButton.Location = new System.Drawing.Point(6, 26);
+            this.generateRandomDataButton.Name = "generateRandomDataButton";
+            this.generateRandomDataButton.Size = new System.Drawing.Size(478, 45);
+            this.generateRandomDataButton.TabIndex = 3;
+            this.generateRandomDataButton.Text = "Generate random data";
+            this.generateRandomDataButton.UseVisualStyleBackColor = false;
+            this.generateRandomDataButton.Click += new System.EventHandler(this.generateRandomDataButton_Click);
             // 
-            // button5
+            // clearFileButton
             // 
-            this.button5.BackColor = System.Drawing.Color.Salmon;
-            this.button5.Location = new System.Drawing.Point(6, 83);
-            this.button5.Name = "button5";
-            this.button5.Size = new System.Drawing.Size(430, 51);
-            this.button5.TabIndex = 3;
-            this.button5.Text = "Clear file";
-            this.button5.UseVisualStyleBackColor = false;
-            this.button5.Click += new System.EventHandler(this.button5_Click);
+            this.clearFileButton.BackColor = System.Drawing.Color.Salmon;
+            this.clearFileButton.Location = new System.Drawing.Point(6, 73);
+            this.clearFileButton.Name = "clearFileButton";
+            this.clearFileButton.Size = new System.Drawing.Size(478, 45);
+            this.clearFileButton.TabIndex = 3;
+            this.clearFileButton.Text = "Clear file";
+            this.clearFileButton.UseVisualStyleBackColor = false;
+            this.clearFileButton.Click += new System.EventHandler(this.clearFileButton_Click);
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.Control;
-            this.ClientSize = new System.Drawing.Size(1169, 754);
+            this.ClientSize = new System.Drawing.Size(1229, 754);
             this.Controls.Add(this.groupBox4);
             this.Controls.Add(this.groupBox3);
             this.Controls.Add(this.groupBox2);
@@ -282,14 +239,12 @@
             this.Name = "Form1";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Form1";
-            this.Load += new System.EventHandler(this.Form1_Load);
             ((System.ComponentModel.ISupportInitialize)(this.databaseGrid)).EndInit();
             this.groupBox1.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.databaseEditorGrid)).EndInit();
             this.groupBox2.ResumeLayout(false);
             this.groupBox3.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.recordByIdNumericUpDown)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.blockIdNumericUpDown)).EndInit();
             this.groupBox4.ResumeLayout(false);
             this.ResumeLayout(false);
 
@@ -308,12 +263,9 @@
         private Button deleteButton;
         private Button editButton;
         private GroupBox groupBox4;
-        private Button button4;
-        private Button button5;
-        private NumericUpDown blockIdNumericUpDown;
-        private Button getBlockByIdButton;
+        private Button generateRandomDataButton;
+        private Button clearFileButton;
         private NumericUpDown recordByIdNumericUpDown;
         private Button getRecordByIdButton;
-        private Button button1;
     }
 }

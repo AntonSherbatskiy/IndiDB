@@ -1,6 +1,9 @@
 using System.Data;
 using System.Diagnostics.CodeAnalysis;
 using System.Windows.Forms;
+using IndiDB.Binary;
+using IndiDB.ExceptionHandle;
+using IndiDB.FileRecord;
 
 namespace IndiDB
 {
@@ -25,127 +28,20 @@ namespace IndiDB
 
         public DataTable MainTable { get; private set; }
         public DataTable EditorTable { get; private set; }
-        public BinaryComponent Component { get; private set; } = new BinaryComponent("main.data", "index.data");
-
-        private void groupBox1_Enter(object sender, EventArgs e)
-        {
-
-        }
-
-        private void Form1_Load(object sender, EventArgs e)
-        {
-
-        }
-
-        private void button2_Click(object sender, EventArgs e)
-        {
-            if (EditorTable.Rows.Count == 0)
-            {
-                MessageBox.Show("No data to add. Please, Enter Id and value into columns.", "Empty table", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-            }
-            else
-            {
-                foreach (DataRow row in EditorTable.Rows)
-                {
-                    if (row[0].ToString() != string.Empty && row[1].ToString() != string.Empty)
-                    {
-                        var record = new DataRecord(Convert.ToInt32(row[0]), Convert.ToInt32(row[1]));
-
-                        if (Component.RecordContains(record))
-                        {
-                            MessageBox.Show($"Record with id: {record.Id} is already exists.", "main.data", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                            continue;
-                        }
-
-                        Component.AddRecord(record);
-                    }
-                }
-            }
-        }
-
-        private void button1_Click(object sender, EventArgs e)
-        {
-            MainTable.Clear();
-
-            var data = BinaryQuery.GetAllData("main.data").Cast<DataRecord>();
-
-            foreach (var item in data)
-            {
-                MainTable.Rows.Add(item.Id, item.Value);
-            }
-
-            databaseGrid.DataSource = MainTable;
-        }
-
-        
-
-        private void button1_Click_1(object sender, EventArgs e)
-        {
-            foreach (DataRow row in EditorTable.Rows)
-            {
-                if (row[0] is not DBNull && row[1] is not DBNull)
-                {
-                    Component.EditRecord(new DataRecord(Convert.ToInt32(row[0]), Convert.ToInt32(row[1])));
-                }
-            }
-        }
-
-        
-
-        private void clearFileToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            var fileStream = File.Open("main.data", FileMode.Open);
-            fileStream.SetLength(0);
-            fileStream.Close();
-        }
+        public BinaryController BinaryController { get; private set; } = new BinaryController("main.data", "index.data");
 
         private void clearAllDataButton_Click(object sender, EventArgs e)
         {
             MainTable.Clear();
+            EditorTable.Clear();
+
             databaseGrid.Refresh();
-        }
-
-        private void button4_Click(object sender, EventArgs e)
-        {
-            GenerateDataForm dataForm = new GenerateDataForm();
-            dataForm.ShowDialog();
-
-            DataGenerator.GenerateRecords("main.data", "index.data", (int)dataForm.numericUpDown1.Value);
-        }
-
-        private void button5_Click(object sender, EventArgs e)
-        {
-            Component.ClearAllData();
-        }
-
-        private void getBlockByIdButton_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                var block = BinaryQuery.GeDataBlockByBlockId("main.data", (int)blockIdNumericUpDown.Value);
-
-                if (block.Count == 0)
-                {
-                    MessageBox.Show("Empty file.", "main.data");
-                }
-                MainTable.Clear();
-
-                foreach (var item in block)
-                {
-                    MainTable.Rows.Add(item.Id, item.Value);
-                }
-
-                databaseGrid.DataSource = MainTable;
-            }
-            catch (EndOfStreamException)
-            {
-                MessageBox.Show($"There are {Component.BlocksQuantity} blocks in file. Last block is {Component.BlocksQuantity - 1}", "Read block error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
+            databaseEditorGrid.Refresh();
         }
 
         private void getRecordByIdButton_Click(object sender, EventArgs e)
         {
-            if (BinaryComponent.RecordsQuantity == 0)
+            if (BinaryController.RecordsQuantity == 0)
             {
                 MessageBox.Show($"Empty file.", "main.data", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
@@ -164,11 +60,38 @@ namespace IndiDB
             databaseGrid.Refresh();
         }
 
-        private void button1_Click_2(object sender, EventArgs e)
+        private void deleteButton_Click(object sender, EventArgs e)
+        {
+            foreach (DataRow row in EditorTable.Rows)
+            {
+                if (row[0] is not DBNull)
+                {
+                    ExceptionHandler.CheckValidFormat(() =>
+                    {
+                        BinaryController.RemoveRecord(Convert.ToInt32(row[0]));
+                    });
+                }
+            }
+        }
+
+        private void clearFileButton_Click(object sender, EventArgs e)
+        {
+            BinaryController.ClearAllData();
+        }
+
+        private void generateRandomDataButton_Click(object sender, EventArgs e)
+        {
+            GenerateDataForm dataForm = new GenerateDataForm();
+            dataForm.ShowDialog();
+
+            DataGenerator.GenerateRecords("main.data", "index.data", (int)dataForm.numericUpDown1.Value);
+        }
+
+        private void getAllRecordsButton_Click(object sender, EventArgs e)
         {
             MainTable.Clear();
 
-            var data = BinaryQuery.GetAllData("index.data").Cast<IndexRecord>();
+            var data = BinaryQuery.GetAllData("main.data").Cast<DataRecord>();
 
             foreach (var item in data)
             {
@@ -178,13 +101,46 @@ namespace IndiDB
             databaseGrid.DataSource = MainTable;
         }
 
-        private void deleteButton_Click(object sender, EventArgs e)
+        private void addButton_Click(object sender, EventArgs e)
+        {
+            if (EditorTable.Rows.Count == 0)
+            {
+                MessageBox.Show("No data to add. Please, Enter Id and value into columns.", "Empty table", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+            else
+            {
+                ExceptionHandler.CheckValidFormat(() =>
+                {
+                    foreach (DataRow row in EditorTable.Rows)
+                    {
+                        if (row[0].ToString() != string.Empty
+                        && row[1].ToString() != string.Empty)
+                        {
+                            var record = new DataRecord(Convert.ToInt32(row[0]), Convert.ToInt32(row[1]));
+
+                            if (BinaryController.RecordContains(record.Id))
+                            {
+                                MessageBox.Show($"Record with id: {record.Id} is already exists.", "main.data", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                                continue;
+                            }
+
+                            BinaryController.AddRecord(record);
+                        }
+                    }
+                });
+            }
+        }
+
+        private void editButton_Click(object sender, EventArgs e)
         {
             foreach (DataRow row in EditorTable.Rows)
             {
-                if (row[0] is not DBNull)
+                if (row[0] is not DBNull && row[1] is not DBNull)
                 {
-                    Component.RemoveRecord(new DataRecord(Convert.ToInt32(row[0]), Convert.ToInt32(row[1])));
+                    ExceptionHandler.CheckValidFormat(() =>
+                    {
+                        BinaryController.EditRecord(new DataRecord(Convert.ToInt32(row[0]), Convert.ToInt32(row[1])));
+                    });
                 }
             }
         }

@@ -4,14 +4,15 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using IndiDB.FileRecord;
 
-namespace IndiDB
+namespace IndiDB.Binary
 {
     public static class DataGenerator
     {
         public static void GenerateRecords(string dataFileName, string indexFileName, int recordsQuantity)
         {
-            BinaryComponent component = new BinaryComponent(dataFileName, indexFileName);
+            BinaryController component = new BinaryController(dataFileName, indexFileName);
             var dataRecords = new DataRecord[recordsQuantity];
             Random random = new Random();
 
@@ -22,8 +23,8 @@ namespace IndiDB
 
             random.Shuffle(dataRecords);
 
-            BinaryComponent.GenerateIndexFileLayout(indexFileName);
-  
+            BinaryController.GenerateIndexFileLayout(indexFileName);
+
             using (var dataWriter = new BinaryWriter(File.Open(dataFileName, FileMode.Truncate)))
             {
 
@@ -33,13 +34,13 @@ namespace IndiDB
                     dataWriter.Write(dataRecords[i].Value);
 
                     int blockId = (int)Math.Floor((double)dataRecords[i].Id / 100);
-                    int startBytePosition = blockId * BinaryComponent.BlockSizeInBytes;
+                    int startBytePosition = blockId * BinaryController.BlockSizeInBytes;
 
-                    var IndexBlock = BinaryQuery.GetIndexBlockByBlockId(indexFileName, blockId);
+                    var IndexBlock = BinaryQuery.GetIndexBlock(indexFileName, blockId);
 
                     for (int j = 0; j < IndexBlock.Count; j++)
                     {
-                        if (IndexBlock[j].Value == BinaryComponent.UnsignedSpaceIndicator)
+                        if (IndexBlock[j].Value == BinaryController.UnsignedSpaceIndicator)
                         {
                             IndexBlock[j].Id = dataRecords[i].Id;
                             IndexBlock[j].Value = i;

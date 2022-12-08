@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using IndiDB.FileRecord;
 
 namespace IndiDB
 {
@@ -15,7 +16,7 @@ namespace IndiDB
             int temp = 0;
             int gamma = (int)Math.Pow(2, k);
 
-            if (indexList[key].Id > id && indexList.Count < Math.Pow(2, k))
+            if (indexList[key].Id > id)
             {
                 do
                 {
