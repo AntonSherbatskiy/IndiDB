@@ -7,9 +7,9 @@ using IndiDB.FileRecord;
 
 namespace IndiDB
 {
-    public partial class Form1 : Form
+    public partial class MainForm : Form
     {
-        public Form1()
+        public MainForm()
         {
             InitializeComponent();
 
@@ -41,23 +41,15 @@ namespace IndiDB
 
         private void getRecordByIdButton_Click(object sender, EventArgs e)
         {
-            if (BinaryController.RecordsQuantity == 0)
+            ExceptionHandler.CheckValidFormat(() =>
             {
-                MessageBox.Show($"Empty file.", "main.data", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
-            }
+                DataRecord? record = BinaryQuery.GetRecordById("main.data", "index.data", (int)recordByIdNumericUpDown.Value);
 
-            DataRecord? record = BinaryQuery.GetRecordById("main.data", "index.data", (int)recordByIdNumericUpDown.Value);
+                MainTable.Clear();
 
-            if (record == null)
-            {
-                MessageBox.Show($"Record with index {recordByIdNumericUpDown.Value} does not esists!", "main.data", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
-            }
-            MainTable.Clear();
-
-            MainTable.Rows.Add(record.Id, record.Value);
-            databaseGrid.Refresh();
+                MainTable.Rows.Add(record.Id, record.Value);
+                databaseGrid.Refresh();
+            }, (int)recordByIdNumericUpDown.Value);
         }
 
         private void deleteButton_Click(object sender, EventArgs e)
@@ -77,6 +69,7 @@ namespace IndiDB
         private void clearFileButton_Click(object sender, EventArgs e)
         {
             BinaryController.ClearAllData();
+            clearAllDataButton_Click(sender, e);
         }
 
         private void generateRandomDataButton_Click(object sender, EventArgs e)
@@ -84,14 +77,19 @@ namespace IndiDB
             GenerateDataForm dataForm = new GenerateDataForm();
             dataForm.ShowDialog();
 
-            DataGenerator.GenerateRecords("main.data", "index.data", (int)dataForm.numericUpDown1.Value);
+            if (dataForm.IsConfirmed == true)
+            {
+                DataGenerator.GenerateRecords("main.data", "index.data", (int)dataForm.numericUpDown1.Value);
+            }
         }
 
         private void getAllRecordsButton_Click(object sender, EventArgs e)
         {
             MainTable.Clear();
 
-            var data = BinaryQuery.GetAllData("main.data").Cast<DataRecord>();
+            var data = BinaryQuery
+                .GetAllData("main.data")
+                .Cast<DataRecord>();
 
             foreach (var item in data)
             {
@@ -113,19 +111,19 @@ namespace IndiDB
                 {
                     foreach (DataRow row in EditorTable.Rows)
                     {
-                        if (row[0].ToString() != string.Empty
-                        && row[1].ToString() != string.Empty)
+                        var record = new DataRecord(Convert.ToInt32(row[0]), Convert.ToInt32(row[1]));
+
+                        if (record.Id < 0)
                         {
-                            var record = new DataRecord(Convert.ToInt32(row[0]), Convert.ToInt32(row[1]));
-
-                            if (BinaryController.RecordContains(record.Id))
-                            {
-                                MessageBox.Show($"Record with id: {record.Id} is already exists.", "main.data", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                                continue;
-                            }
-
-                            BinaryController.AddRecord(record);
+                            throw new OverflowException();
                         }
+                        else if (BinaryController.RecordContains(record.Id))
+                        {
+                            MessageBox.Show($"Record with id: {record.Id} is already exists.", "main.data", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                            continue;
+                        }
+
+                        BinaryController.AddRecord(record);
                     }
                 });
             }

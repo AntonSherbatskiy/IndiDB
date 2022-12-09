@@ -15,10 +15,14 @@ namespace IndiDB
         public GenerateDataForm()
         {
             InitializeComponent();
+            IsConfirmed = false;
         }
+
+        public bool IsConfirmed { get; private set; }
 
         private void OkButton_Click(object sender, EventArgs e)
         {
+            IsConfirmed = true;
             Close();
         }
     }
